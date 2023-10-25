@@ -22,7 +22,8 @@ class MediaController extends Controller
         //         ->on('posts.author_id', '=', "$id");
                
         // })
-        // ->get('files.*');
+        // ->select('files.*')
+        // ->get();
         
         return Inertia::render('Media/Media', [
             'media' => $media,

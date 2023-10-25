@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class Post extends Model
@@ -20,17 +19,12 @@ class Post extends Model
 
     static function getUserPosts()
     {
-        $posts = DB::select('SELECT posts.*, files.path
-                                        AS path
-                                        FROM posts
-                                        JOIN files
-                                        WHERE posts.author_id = :author_id
-                                        AND files.post_id = posts.id
-                                        ORDER BY posts.created_at DESC',
-            [
-                'author_id' => Auth::user()->id,
-            ]
-        );
+        $author_id = Auth::user()->id;
+        $posts = self::join('files', 'files.post_id', '=', 'posts.id')
+                    ->where('posts.author_id', '=', $author_id)
+                    ->orderBy('posts.created_at', 'desc')
+                    ->select('posts.*', 'files.path')
+                    ->get();
         return $posts;
     }
 

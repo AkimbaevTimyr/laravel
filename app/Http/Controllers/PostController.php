@@ -94,7 +94,8 @@ class PostController extends Controller
         } else {
             $posts = Post::join('files', 'files.post_id', '=', 'posts.id')
                             ->where('author_id', '=', $id)
-                            ->get('posts.*', 'files.path');
+                            ->select('posts.*', 'files.path')
+                            ->get();
         }
         return response()->json($posts);
     }
