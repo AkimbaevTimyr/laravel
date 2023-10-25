@@ -13,12 +13,15 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-//        $posts = Post::where('author_id', $request->id)->where('is_visible', 1)->get();
-        $posts = DB::select('SELECT posts.*, files.path AS path FROM posts JOIN files WHERE posts.author_id = :author_id AND posts.is_visible AND files.post_id = posts.id',
-            [
-                'author_id' => $request->id,
-            ]
-        );
+        // $posts = DB::select('SELECT posts.*, files.path AS path FROM posts JOIN files WHERE posts.author_id = :author_id AND posts.is_visible AND files.post_id = posts.id',
+        //     [
+        //         'author_id' => $request->id,
+        //     ]
+        // );
+        $posts = Post::join('files', 'files.post_id', '=', 'posts.id')
+                    ->where('posts.author_id','=', $request->id)
+                    ->select('posts.*', 'files.patj')
+                    ->get();
         $user = User::find($request->id);
         return Inertia::render('User/UserPage',[
             "posts" => $posts,
