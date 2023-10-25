@@ -14,7 +14,7 @@ export default function Media({auth, media}){
             header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Dashboard</h2>}
         >
             <div className="flex flex-wrap items-center justify-center">
-                {media.map((file) => (
+                {media.length == 0 ? 'Media не найдены' : media.map((file) => (
                     <div className="py-14" key={file.id}>
                         <div className="max-w-2xl mx-auto sm:px-6 lg:px-8">
                             <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">

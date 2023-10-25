@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
+use Spatie\Permission\Models\Role;
 use Mockery\Exception;
 
 class GoogleLoginController extends Controller
@@ -32,6 +33,8 @@ class GoogleLoginController extends Controller
                     'google_id' => $user->id,
                     'password' => "password"
                 ]);
+                $role = Role::findByName('user');
+                $newUser->assignRole($role);
                 Auth::login($newUser);
                 return redirect()->intended('/');
             }

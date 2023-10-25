@@ -8,6 +8,8 @@ use App\Models\PostComment;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -21,7 +23,8 @@ class PostController extends Controller
         return Inertia::render('Posts/Posts', [
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
-            'posts' => $posts
+            'posts' => $posts,
+            'role' => Auth::user()->getRoleNames(),
         ]);
     }
 
@@ -35,7 +38,7 @@ class PostController extends Controller
         Post::createPost($request);
     }
 
-    public function show(Request $request)
+    public function edit(Request $request)
     {
         $post = Post::find($request->id);
         return Inertia::render('Posts/PostPage', [
@@ -79,21 +82,20 @@ class PostController extends Controller
         ]);
     }
 
-    public function updatePhoto(Request $request)
+    public function filterPosts(Request $request)
     {
-        $id = $request->id;
         $request->validate([
-            'file' => 'file|mimes:jpg,png|max:1024'
+            'id' => 'string'
         ]);
-
-        if($request->hasFile('file'))
+        $id = $request->id;
+        if($id == '0')
         {
-            $file = $request->file('file');
-            $name = $file->hashName();
-            $path = Storage::put("${name}", $file);
-            $media = Media::find($id);
-            $media->path = $path;
-            $media->save();
+            $posts = Post::all();
+        } else {
+            $posts = Post::join('files', 'files.post_id', '=', 'posts.id')
+                            ->where('author_id', '=', $id)
+                            ->get('posts.*', 'files.path');
         }
+        return response()->json($posts);
     }
 }

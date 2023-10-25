@@ -14,9 +14,16 @@ class MediaController extends Controller
     public function index()
     {
         $id = Auth::user()->id;
-        $media = DB::select("SELECT F.id, F.post_id, F.path FROM files F JOIN posts WHERE F.post_id = posts.id AND posts.author_id = :id;",
-                                ['id' => $id]
-        );
+        // $media = DB::select("SELECT F.id, F.post_id, F.path FROM files F JOIN posts WHERE F.post_id = posts.id AND posts.author_id = :id;",
+        //                         ['id' => $id]
+        // );
+        $media = Media::join('posts', function($q) use($id) {
+            $q->on('files.post_id', '=', 'posts.id')
+                ->on('posts.author_id', '=', "$id");
+               
+        })
+        ->get('files.*');
+        
         return Inertia::render('Media/Media', [
             'media' => $media,
         ]);

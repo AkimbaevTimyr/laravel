@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -42,16 +43,20 @@ class Post extends Model
             'description' => $request->description
         ]);
 
+        Cache::put("posts:{$post->id}", $post);
+
         if($request->hasFile('file'))
         {
             $file = $request->file('file');
             $name = $file->hashName();
             $path = Storage::put("${name}", $file);
-            Media::create([
+            $media = Media::create([
+                'author' => '123',
                 'post_id' =>  $post->id,
                 'path' => $path
             ]);
         }
+        Cache::put("files:{$media->id}", $media);
     }
 
     static function updatePost($id = 0, $title = "", $description = ""): void

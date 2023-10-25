@@ -5,9 +5,9 @@ import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link } from '@inertiajs/react';
 
-export default function Authenticated({ user, header, children }) {
+export default function Authenticated({ user, header, children}) {
+    const userRole = "user.roles[0].name";
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
-
     return (
         <div className="min-h-screen bg-gray-100">
             <nav className="bg-white border-b border-gray-100">
@@ -70,6 +70,7 @@ export default function Authenticated({ user, header, children }) {
                                     </Dropdown.Trigger>
 
                                     <Dropdown.Content>
+                                        { userRole === 'moderator' ? <Dropdown.Link href={route('roles.index')}>User Roles</Dropdown.Link> : ''}
                                         <Dropdown.Link href={route('profile.edit')}>Profile</Dropdown.Link>
                                         <Dropdown.Link href={route('logout')} method="post" as="button">
                                             Log Out

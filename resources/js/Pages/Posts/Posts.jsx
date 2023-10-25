@@ -2,7 +2,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import {Head, Link} from "@inertiajs/react";
 import Post from "@/Pages/Posts/Post.jsx";
 
-export default function Posts({ auth, posts}){
+export default function Posts({ auth, posts, role}){
     return(
         <AuthenticatedLayout
             user={auth.user}
@@ -20,7 +20,7 @@ export default function Posts({ auth, posts}){
                                         </div>
                     :
                     posts.map((item) => (
-                    <Link href={`/post/${item.id}`} key={item.id}>
+                    <Link href={`/post-edit/${item.id}`} key={item.id}>
                         <Post id={item.id} author={item.author} title={item.title} description={item.description} path={item.path} created_at={item.created_at} showDeleteButton={false}/>
                     </Link>
                 ))}
