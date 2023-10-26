@@ -65,4 +65,15 @@ class Post extends Model
             'description' => $description
         ]);
     }
+
+    //$visible - 0 or 1
+    static function getPostsWithFiles($visible = 1): array
+    {
+        $posts = self::join('files', 'files.id', '=', 'posts.id')
+        ->where('posts.is_visible', '=', $visible)
+        ->select('posts.*', 'files.path')
+        ->get()
+        ->toArray();
+        return $posts;
+    }
 }

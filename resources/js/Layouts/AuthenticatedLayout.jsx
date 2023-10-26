@@ -6,7 +6,7 @@ import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link } from '@inertiajs/react';
 
 export default function Authenticated({ user, header, children}) {
-    const userRole = "user.roles[0].name";
+    const userRole = user?.roles[0].name;
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
     return (
         <div className="min-h-screen bg-gray-100">

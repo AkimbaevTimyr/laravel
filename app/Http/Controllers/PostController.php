@@ -2,16 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Media;
 use App\Models\Post;
 use App\Models\PostComment;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class PostController extends Controller
@@ -61,14 +58,13 @@ class PostController extends Controller
         Post::updatePost($request->id, $request->title, $request->description);
     }
 
+
+    //1 visible
+    //0 not visible
     public function setVisible(Request $request)
     {
         $post = Post::find($request->id);
-        if($post->is_visible == 1){
-            $post->is_visible = 0;
-        }else {
-            $post->is_visible = 1;
-        }
+        $post->is_visible = $post->is_visible == 1? 0 : 1;
         $post->save();
     }
     public function publication(Request $request)
@@ -90,11 +86,11 @@ class PostController extends Controller
         $id = $request->id;
         if($id == '0')
         {
-            $posts = Post::all();
+            $posts = Post::getPostsWithFiles();
         } else {
             $posts = Post::join('files', 'files.post_id', '=', 'posts.id')
                             ->where('author_id', '=', $id)
-                            ->select('posts.*', 'files.path')
+                            ->select('posts.*', 'files.path as path')
                             ->get();
         }
         return response()->json($posts);

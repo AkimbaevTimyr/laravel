@@ -9,6 +9,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicationsDynamicController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\UserController;
+use App\Models\Post;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -27,7 +28,7 @@ use Inertia\Inertia;
 */
 Route::middleware('guest')->group(function () {
     Route::get('/', function () {
-        $posts = DB::select('SELECT posts.*, files.path AS path FROM posts JOIN files WHERE posts.is_visible = 1 AND posts.id = files.id',);
+        $posts = Post::getPostsWithFiles();
         $authors = User::all();
         return Inertia::render('Welcome', ['posts' => $posts, 'authors' => $authors]);
     });
@@ -77,19 +78,13 @@ Route::group(['middleware' =>  ['auth', 'role:user']], function () {
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/media', [MediaController::class, 'index'])->name('media');
     Route::get('/media-download/{folder_name}/{file_name}', [MediaController::class, 'download'])->name('media.download');
+});
 
+Route::group(['middleware' => ['auth', 'role:moderator']], function () {
     Route::get('/roles', [RolesController::class, 'index'])->name('roles.index');
     Route::put("/update-role/{id}/{role_id}", [RolesController::class, 'updateRole'])->name('roles.update-role');
     Route::post('/create-role', [RolesController::class, 'store'])->name('roles.store');
 });
-
-
-
-Route::middleware('auth')->group(function () {
-    Route::get('/main',  [InspiniaController::class, 'index'])->name('inspinia.index');
-});
-
-
 
 
 require __DIR__.'/auth.php';
