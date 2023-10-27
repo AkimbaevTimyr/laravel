@@ -48,5 +48,12 @@ class User extends Authenticatable
     ];
 
    
-    
+    static function getUsersWithRole(): array
+    {
+        return self::join('model_has_roles', 'model_has_roles.model_id', '=', 'users.id')
+                    ->join('roles','roles.id', '=', 'model_has_roles.role_id')
+                    ->select('users.name', 'users.email', 'users.id', 'roles.name')
+                    ->get()
+                    ->toArray();
+    }
 }

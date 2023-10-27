@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ModelHasRoles;
+use App\Models\Roles;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -14,13 +15,10 @@ class RolesController extends Controller
 {
     public function index()
     {
-        $roles = DB::select('SELECT * FROM roles');
+        $roles = Roles::all();
         $users = User::all();
-        $users = DB::select('SELECT users.name, users.email, users.id, R.name AS role
-                             FROM users 
-                             JOIN model_has_roles AS MHR ON MHR.model_id = users.id 
-                             JOIN roles AS R ON R.id = MHR.role_id'
-        );
+        $users = User::getUsersWithRole();
+        
         return Inertia::render('Roles/Roles', [
             'roles' => $roles,
             'users' => $users

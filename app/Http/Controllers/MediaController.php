@@ -33,8 +33,13 @@ class MediaController extends Controller
 
     public function download(Request $request)
     {
-        $folderName = $request->folder_name; // Здесь $request->folder_name - имя папки
-        $fileName = $request->file_name; // Здесь $request->file_name - имя файла
+        $request->validate([
+            "folder_name" => 'string',
+            "file_name" => 'string'
+        ]);
+        
+        $folderName = $request->folder_name; 
+        $fileName = $request->file_name;
 
         return Storage::download("$folderName/$fileName");
     }

@@ -12,11 +12,7 @@ class PublicationsDynamicController extends Controller
     public function index()
     {
         $id = Auth::user()->id;
-        $posts = Post::select('author', 'COUNT(*) as post_count', 'Date(created_at) as post_date')
-                    ->where('author_id', '=', $id)
-                    ->groupBy('author')
-                    ->groupBy('post_date')
-                    ->get();
+        $posts = Post::getPostDataForAuthorAndDate($id);
         return Inertia::render('PublicationsDynamic/PublicationDynamic',[
             'posts' => $posts,
         ]);

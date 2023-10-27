@@ -77,7 +77,6 @@ class PostController extends Controller
             'comments' => $comments
         ]);
     }
-
     public function filterPosts(Request $request)
     {
         $request->validate([
@@ -88,10 +87,7 @@ class PostController extends Controller
         {
             $posts = Post::getPostsWithFiles();
         } else {
-            $posts = Post::join('files', 'files.post_id', '=', 'posts.id')
-                            ->where('author_id', '=', $id)
-                            ->select('posts.*', 'files.path as path')
-                            ->get();
+            $posts = Post::getPostsWithFiles($id);
         }
         return response()->json($posts);
     }
