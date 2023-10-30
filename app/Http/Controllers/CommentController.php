@@ -19,6 +19,5 @@ class CommentController extends Controller
             'comment' => $request->comment,
             'post_id' => $request->id
         ]);
-
     }
 }

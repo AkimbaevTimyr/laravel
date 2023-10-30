@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PostCreateRequest;
+use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\Post;
 use App\Models\PostComment;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -25,13 +27,9 @@ class PostController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(PostCreateRequest $request)
     {
-        $request->validate([
-            'title' => 'required|string|max:64|unique:posts',
-            'description' => 'required|max:500',
-            'file' => 'file|mimes:jpg,png|max:1024'
-        ]);
+        $request->validated();
         Post::createPost($request);
     }
 
@@ -83,12 +81,7 @@ class PostController extends Controller
             'id' => 'string'
         ]);
         $id = $request->id;
-        if($id == '0')
-        {
-            $posts = Post::getPostsWithFiles();
-        } else {
-            $posts = Post::getPostsWithFiles($id);
-        }
+        $posts = $id == '0' ? $posts = Post::getPostsWithFiles() :  $posts = Post::getPostsWithFiles($id);
         return response()->json($posts);
     }
 }

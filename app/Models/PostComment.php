@@ -12,4 +12,6 @@ class PostComment extends Model
     protected $table = "post_comments";
 
     protected $fillable = ["name", "comment", "created_at", "post_id", "updated_at"];
+
+    static function createComment()
 }

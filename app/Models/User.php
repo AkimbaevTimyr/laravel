@@ -52,7 +52,7 @@ class User extends Authenticatable
     {
         return self::join('model_has_roles', 'model_has_roles.model_id', '=', 'users.id')
                     ->join('roles','roles.id', '=', 'model_has_roles.role_id')
-                    ->select('users.name', 'users.email', 'users.id', 'roles.name')
+                    ->select('users.name', 'users.email', 'users.id', 'roles.name as role')
                     ->get()
                     ->toArray();
     }

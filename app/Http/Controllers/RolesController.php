@@ -6,19 +6,18 @@ use App\Models\ModelHasRoles;
 use App\Models\Roles;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Validator;
 
 class RolesController extends Controller
 {
     public function index()
     {
         $roles = Roles::all();
-        $users = User::all();
         $users = User::getUsersWithRole();
-        
+
         return Inertia::render('Roles/Roles', [
             'roles' => $roles,
             'users' => $users
@@ -34,13 +33,27 @@ class RolesController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $rules = [
             'permission' => 'string|max:64',
-            'role' => 'string|max:32|unique:roles'
-        ]);
+            'name' => 'string|max:32|unique:roles'
+        ];
+
+        $messages = [
+            'permission.string' => 'Поле permission должно являть строкой',
+            'permission.required' => 'Поле permission должно быть заполненно',
+            'name.unique' => 'Название роли должно быть уникальным'
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
         
+        if($validator->fails()) {
+            return redirect()->back()
+            ->withErrors($validator)
+            ->withInput();
+        }
+
         $permission = $request->permission;
-        $role = $request->role;
+        $role = $request->name;
 
         $endPermission = Permission::create(['name' => $permission]);
         $endRole = Role::create(['name' => $role]);
