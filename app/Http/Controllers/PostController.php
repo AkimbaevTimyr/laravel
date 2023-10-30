@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Media;
+use App\Http\Requests\PostCreateRequest;
+use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\Post;
 use App\Models\PostComment;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class PostController extends Controller
@@ -28,13 +27,9 @@ class PostController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(PostCreateRequest $request)
     {
-        $request->validate([
-            'title' => 'required|string|max:64|unique:posts',
-            'description' => 'required|max:500',
-            'file' => 'file|mimes:jpg,png|max:1024'
-        ]);
+        $request->validated();
         Post::createPost($request);
     }
 
@@ -61,14 +56,13 @@ class PostController extends Controller
         Post::updatePost($request->id, $request->title, $request->description);
     }
 
+
+    //1 visible
+    //0 not visible
     public function setVisible(Request $request)
     {
         $post = Post::find($request->id);
-        if($post->is_visible == 1){
-            $post->is_visible = 0;
-        }else {
-            $post->is_visible = 1;
-        }
+        $post->is_visible = $post->is_visible == 1? 0 : 1;
         $post->save();
     }
     public function publication(Request $request)
@@ -81,21 +75,13 @@ class PostController extends Controller
             'comments' => $comments
         ]);
     }
-
     public function filterPosts(Request $request)
     {
         $request->validate([
             'id' => 'string'
         ]);
         $id = $request->id;
-        if($id == '0')
-        {
-            $posts = Post::all();
-        } else {
-            $posts = Post::join('files', 'files.post_id', '=', 'posts.id')
-                            ->where('author_id', '=', $id)
-                            ->get('posts.*', 'files.path');
-        }
+        $posts = $id == '0' ? $posts = Post::getPostsWithFiles() :  $posts = Post::getPostsWithFiles($id);
         return response()->json($posts);
     }
 }

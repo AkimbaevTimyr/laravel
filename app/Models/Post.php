@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class Post extends Model
@@ -16,21 +15,16 @@ class Post extends Model
 
     protected $table = "posts";
 
-    protected $fillable = ["id", "author", "title", 'author_id','description', 'created_at', 'is_visible'];
+    protected $fillable = ["id", "author", "title", 'author_id', 'description', 'created_at', 'is_visible'];
 
     static function getUserPosts()
     {
-        $posts = DB::select('SELECT posts.*, files.path
-                                        AS path
-                                        FROM posts
-                                        JOIN files
-                                        WHERE posts.author_id = :author_id
-                                        AND files.post_id = posts.id
-                                        ORDER BY posts.created_at DESC',
-            [
-                'author_id' => Auth::user()->id,
-            ]
-        );
+        $author_id = Auth::user()->id;
+        $posts = self::join('files', 'files.post_id', '=', 'posts.id')
+            ->where('posts.author_id', '=', $author_id)
+            ->orderBy('posts.created_at', 'desc')
+            ->select('posts.*', 'files.path')
+            ->get();
         return $posts;
     }
 
@@ -45,8 +39,7 @@ class Post extends Model
 
         Cache::put("posts:{$post->id}", $post);
 
-        if($request->hasFile('file'))
-        {
+        if ($request->hasFile('file')) {
             $file = $request->file('file');
             $name = $file->hashName();
             $path = Storage::put("${name}", $file);
@@ -62,7 +55,7 @@ class Post extends Model
     static function updatePost($id = 0, $title = "", $description = ""): void
     {
         $post = self::find($id);
-        if(!$post) {
+        if (!$post) {
             throw new \Exception('Post not found');
         }
 
@@ -70,5 +63,35 @@ class Post extends Model
             'title' => $title,
             'description' => $description
         ]);
+    }
+
+    //$visible - 0 or 1
+    static function getPostsWithFiles($visible = 1): array
+    {
+        $posts = self::join('files', 'files.id', '=', 'posts.id')
+            ->where('posts.is_visible', '=', $visible)
+            ->select('posts.*', 'files.path')
+            ->get()
+            ->toArray();
+        return $posts;
+    }
+
+    static function getPostsByAuthor($id)
+    {
+        return Post::join('files', 'files.post_id', '=', 'posts.id')
+            ->where('author_id', '=', $id)
+            ->select('posts.*', 'files.path as path')
+            ->get()
+            ->toArray();
+    }
+
+    static function getPostDataForAuthorAndDate($id)
+    {
+        return Post::select('author', 'COUNT(*) as post_count', 'Date(created_at) as post_date')
+                    ->where('author_id', '=', $id)
+                    ->groupBy('author')
+                    ->groupBy('post_date')
+                    ->get()
+                    ->toArray();
     }
 }

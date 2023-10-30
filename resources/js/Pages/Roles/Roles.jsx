@@ -3,10 +3,12 @@ import { useForm } from '@inertiajs/react';
 import TextInput from '@/Components/TextInput';
 import PrimaryButton from '@/Components/PrimaryButton';
 import InputLabel from '@/Components/InputLabel';
+import { Transition } from '@headlessui/react';
+import InputError from '@/Components/InputError';
 
-export default function Roles({auth, roles, users}){
-    const {put, data, setData, processing, post} = useForm({
-        role: "",
+export default function Roles({ auth, roles, users }) {
+    const { put, data, setData, processing, post, recentlySuccessful, errors } = useForm({
+        name: "",
         permission: ""
     });
 
@@ -20,7 +22,7 @@ export default function Roles({auth, roles, users}){
         post('/create-role');
     }
 
-    return(
+    return (
         <AuthenticatedLayout
             user={auth.user}
             header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Управление ролями</h2>}
@@ -32,22 +34,22 @@ export default function Roles({auth, roles, users}){
                         <div className="mt-2">
                             <table className="mx-auto table-auto">
                                 <thead>
-                                <tr className="bg-gradient-to-r from-indigo-600 to-purple-600">
-                                    <th className="px-16 py-2">
-                                        <span className="text-gray-100 font-semibold">Name</span>
-                                    </th>
-                                    <th className="px-16 py-2">
-                                        <span className="text-gray-100 font-semibold">Email</span>
-                                    </th>
+                                    <tr className="bg-gradient-to-r from-indigo-600 to-purple-600">
+                                        <th className="px-16 py-2">
+                                            <span className="text-gray-100 font-semibold">Name</span>
+                                        </th>
+                                        <th className="px-16 py-2">
+                                            <span className="text-gray-100 font-semibold">Email</span>
+                                        </th>
 
-                                    <th className="px-16 py-2">
-                                        <span className="text-gray-100 font-semibold">Role</span>
-                                    </th>
+                                        <th className="px-16 py-2">
+                                            <span className="text-gray-100 font-semibold">Role</span>
+                                        </th>
 
-                                    <th className="px-16 py-2">
-                                        <span className="text-gray-100 font-semibold">Edit</span>
-                                    </th>
-                                </tr>
+                                        <th className="px-16 py-2">
+                                            <span className="text-gray-100 font-semibold">Edit</span>
+                                        </th>
+                                    </tr>
                                 </thead>
                                 <tbody className="bg-gray-200">
                                     {
@@ -63,13 +65,13 @@ export default function Roles({auth, roles, users}){
                                                     <span>{user.role}</span>
                                                 </td>
                                                 <td className="px-16 py-2">
-                                                <select name="select" id="select" onChange={(e) => onHandleChange(e, user.id)} disabled={user.email == auth.user.email}>
-                                                    {
-                                                        roles.map((role) => (
-                                                            <option key={role.id} value={role.id} selected={role.name === user.role}>{role.name}</option>
-                                                        ))
-                                                    }
-                                                </select>
+                                                    <select name="select" id="select" onChange={(e) => onHandleChange(e, user.id)} disabled={user.email == auth.user.email}>
+                                                        {
+                                                            roles.map((role) => (
+                                                                <option key={role.id} value={role.id} selected={role.name === user.role}>{role.name}</option>
+                                                            ))
+                                                        }
+                                                    </select>
                                                 </td>
                                             </tr>
                                         ))
@@ -80,44 +82,59 @@ export default function Roles({auth, roles, users}){
                     </div>
                     <div className="max-w-5xl mx-auto sm:px-6 lg:px-8 ">
                         <div className="mt-2">
-                        <form onSubmit={submit}>
-                            <div>
-                                <InputLabel htmlFor="role" value="Role" />
+                            <form onSubmit={submit}>
+                                <div>
+                                    <InputLabel htmlFor="role" value="Role" />
 
-                                <TextInput
-                                    id="role"
-                                    type="role"
-                                    name="role"
-                                    value={data.email}
-                                    className="mt-1 block w-full"
-                                    autoComplete="username"
-                                    isFocused={true}
-                                    onChange={(e) => setData('role', e.target.value)}
-                                />
+                                    <TextInput
+                                        id="role"
+                                        type="role"
+                                        name="role"
+                                        value={data.email}
+                                        className="mt-1 block w-full p-3"
+                                        autoComplete="username"
+                                        isFocused={true}
+                                        onChange={(e) => setData('name', e.target.value)}
+                                    />
 
-                            </div>
+                                    <InputError message={errors.name} className="mt-2" />
 
-                            <div className="mt-4">
-                                <InputLabel htmlFor="permission" value="Permission" />
+                                </div>
 
-                                <TextInput
-                                    id="permission"
-                                    type="permission"
-                                    name="permission"
-                                    value={data.password}
-                                    className="mt-1 block w-full"
-                                    autoComplete="current-password"
-                                    onChange={(e) => setData('permission', e.target.value)}
-                                />
+                                <div className="mt-4">
+                                    <InputLabel htmlFor="permission" value="Permission" />
 
-                            </div>
+                                    <TextInput
+                                        id="permission"
+                                        type="permission"
+                                        name="permission"
+                                        value={data.password}
+                                        className="mt-1 block w-full p-3"
+                                        autoComplete="current-password"
+                                        onChange={(e) => setData('permission', e.target.value)}
+                                    />
 
-                            <div className="flex items-center justify-end mt-4 mb-5">
-                                <PrimaryButton className="ml-4" disabled={processing}>
-                                    Создать
-                                </PrimaryButton>
-                            </div>
-                        </form>
+                                    <InputError message={errors.permission} className="mt-2" />
+
+                                </div>
+
+                                <div className="flex items-center justify-end mt-4 mb-5">
+                                    <div>
+                                        <PrimaryButton className="ml-4" disabled={processing}>
+                                            Create
+                                        </PrimaryButton>
+                                        <Transition
+                                            show={recentlySuccessful}
+                                            enter="transition ease-in-out"
+                                            enterFrom="opacity-0"
+                                            leave="transition ease-in-out"
+                                            leaveTo="opacity-0"
+                                        >
+                                            <p className="text-sm text-gray-600">Successfully.</p>
+                                        </Transition>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>

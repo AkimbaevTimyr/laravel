@@ -3,6 +3,7 @@ import {Head, Link} from "@inertiajs/react";
 import Post from "@/Pages/Posts/Post.jsx";
 
 export default function Posts({ auth, posts, role}){
+    console.log(posts)
     return(
         <AuthenticatedLayout
             user={auth.user}
