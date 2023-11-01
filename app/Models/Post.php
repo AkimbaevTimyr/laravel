@@ -66,23 +66,22 @@ class Post extends Model
     }
 
     //$visible - 0 or 1
-    static function getPostsWithFiles($visible = 1): array
+    static function getPostsWithFiles($visible = 1)
     {
         $posts = self::join('files', 'files.id', '=', 'posts.id')
             ->where('posts.is_visible', '=', $visible)
             ->select('posts.*', 'files.path')
-            ->get()
-            ->toArray();
+            ->paginate();
         return $posts;
     }
 
     static function getPostsByAuthor($id)
     {
-        return Post::join('files', 'files.post_id', '=', 'posts.id')
+        $posts = Post::join('files', 'files.post_id', '=', 'posts.id')
             ->where('author_id', '=', $id)
             ->select('posts.*', 'files.path as path')
-            ->get()
-            ->toArray();
+            ->paginate();
+        return $posts;
     }
 
     static function getPostDataForAuthorAndDate($id)

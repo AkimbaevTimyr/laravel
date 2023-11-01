@@ -75,13 +75,17 @@ class PostController extends Controller
             'comments' => $comments
         ]);
     }
+
+    //$id 0 - all posts
+    //$id 1,2 or another id, get user posts
     public function filterPosts(Request $request)
     {
         $request->validate([
             'id' => 'string'
         ]);
-        $id = $request->id;
-        $posts = $id == '0' ? $posts = Post::getPostsWithFiles() :  $posts = Post::getPostsWithFiles($id);
-        return response()->json($posts);
+
+        $posts = $request->id ? Post::getPostsByAuthor($request->id) : Post::getPostsWithFiles() ;
+
+        return $posts;
     }
 }
