@@ -5,7 +5,6 @@ import Pagination from '@/Components/Pagination';
 import ImageComponent from "@/Components/ImageComponent.jsx";
 import { convertDate } from "@/helpers/converDate.js";
 
-import Post from './Posts/Post';
 
 export default function Welcome({ auth,posts, authors }) {
 

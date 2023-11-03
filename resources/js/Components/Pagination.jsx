@@ -21,7 +21,7 @@ export default function Pagination({ links }) {
                     links.map((link) => (
                         <li key={link.label}>
                             <a href={link.url} className={getClassName(link.active)}>
-                                {link.label}
+                                { link.label.replace('&laquo;', '<').replace('&raquo;', '>') }
                             </a>
                         </li>
                     ))

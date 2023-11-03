@@ -37,6 +37,7 @@ Route::middleware('guest')->group(function () {
     Route::get('login/google/callback', [GoogleLoginController::class, 'callback'])->name('login.google-callback');
 
     Route::post('/create-comment/{id}', [CommentController::class, 'create'])->name('comment.create');
+    Route::delete('/delete-comment/{id}', [CommentController::class,'delete'])->name('comment.delete');
 
     Route::get('/publication/{id}', [PostController::class, 'publication'])->name('post.publication');
 
