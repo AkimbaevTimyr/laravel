@@ -79,7 +79,6 @@ Route::group(['middleware' =>  ['auth', 'role:user']], function () {
     Route::post('/dynamic-get-posts', [PublicationsDynamicController::class, 'get'])->name('dynamic.get');
 });
 
-// Route::group(['middleware' => ['auth', 'role:moderator']], function () {
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/media', [MediaController::class, 'index'])->name('media');
     Route::get('/media-download/{folder_name}/{file_name}', [MediaController::class, 'download'])->name('media.download');
