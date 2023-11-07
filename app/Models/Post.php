@@ -37,19 +37,15 @@ class Post extends Model
             'description' => $request->description
         ]);
 
-        Cache::put("posts:{$post->id}", $post);
-
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $name = $file->hashName();
             $path = Storage::put("${name}", $file);
             $media = Media::create([
-                'author' => '123',
                 'post_id' =>  $post->id,
                 'path' => $path
             ]);
         }
-        Cache::put("files:{$media->id}", $media);
     }
 
     static function updatePost($id = 0, $title = "", $description = ""): void

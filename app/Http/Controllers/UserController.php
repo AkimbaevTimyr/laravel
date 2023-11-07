@@ -20,6 +20,7 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $posts = Post::getPostsByAuthor($request->id);
+
         try{
             $user = $this->userService->search($request->id);
         } catch(ModelNotFoundException $e) {

@@ -6,6 +6,7 @@ use App\Models\User;
 use Auth;
 use Exception;
 use Hash;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
@@ -46,7 +47,7 @@ class OAuthController extends Controller
                 return redirect()->intended('/');
             }
 
-        } catch (Exception $e)
+        } catch (AuthenticationException $e)
         {
             dd($e->getMessage());
         }
