@@ -20,4 +20,9 @@ class CommentController extends Controller
             'post_id' => $request->id
         ]);
     }
+
+    public function delete(Request $request)
+    {
+        PostComment::where('id', $request->id)->delete();
+    }
 }

@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -55,5 +57,12 @@ class User extends Authenticatable
                     ->select('users.name', 'users.email', 'users.id', 'roles.name as role')
                     ->get()
                     ->toArray();
+    }
+    
+    protected function name(): Attribute
+    {
+        return Attribute::make(
+            get: fn(string $value) => ucfirst($value),
+        );
     }
 }

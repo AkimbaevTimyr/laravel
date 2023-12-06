@@ -21,6 +21,7 @@ export default function CreatePostForm({className = ""}){
         post(route('post.store', {
             onSuccess: () => reset('title', 'description'),
             onError: (errors) => {
+                console.log(errors);
                 if (errors.title) {
                     reset('title', 'title');
                     titleInput.current.focus();
