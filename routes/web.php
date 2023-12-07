@@ -1,9 +1,6 @@
 <?php
 
 use App\Http\Controllers\CommentController;
-use App\Http\Controllers\GitHubController;
-use App\Http\Controllers\GoogleLoginController;
-use App\Http\Controllers\InspiniaController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\OAuthController;
 use App\Http\Controllers\PostController;
@@ -14,7 +11,6 @@ use App\Http\Controllers\UserController;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
