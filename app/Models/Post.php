@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class Post extends Model
@@ -37,19 +38,15 @@ class Post extends Model
             'description' => $request->description
         ]);
 
-        Cache::put("posts:{$post->id}", $post);
-
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $name = $file->hashName();
             $path = Storage::put("${name}", $file);
             $media = Media::create([
-                'author' => '123',
                 'post_id' =>  $post->id,
                 'path' => $path
             ]);
         }
-        Cache::put("files:{$media->id}", $media);
     }
 
     static function updatePost($id = 0, $title = "", $description = ""): void
@@ -66,31 +63,29 @@ class Post extends Model
     }
 
     //$visible - 0 or 1
-    static function getPostsWithFiles($visible = 1): array
+    static function getPostsWithFiles($visible = 1)
     {
         $posts = self::join('files', 'files.id', '=', 'posts.id')
             ->where('posts.is_visible', '=', $visible)
             ->select('posts.*', 'files.path')
-            ->get()
-            ->toArray();
+            ->paginate();
         return $posts;
     }
 
     static function getPostsByAuthor($id)
     {
-        return Post::join('files', 'files.post_id', '=', 'posts.id')
+        $posts = Post::join('files', 'files.post_id', '=', 'posts.id')
             ->where('author_id', '=', $id)
             ->select('posts.*', 'files.path as path')
-            ->get()
-            ->toArray();
+            ->paginate();
+        return $posts;
     }
 
     static function getPostDataForAuthorAndDate($id)
     {
-        return Post::select('author', 'COUNT(*) as post_count', 'Date(created_at) as post_date')
+        return Post::select('author', DB::raw('COUNT(*) as post_count'), Db::raw('Date(created_at) as post_date'))
                     ->where('author_id', '=', $id)
-                    ->groupBy('author')
-                    ->groupBy('post_date')
+                    ->groupBy('post_date', 'author')
                     ->get()
                     ->toArray();
     }

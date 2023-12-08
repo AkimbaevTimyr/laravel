@@ -3,7 +3,11 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Throwable;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpFoundation\Response;
 
 class Handler extends ExceptionHandler
 {
@@ -21,10 +25,27 @@ class Handler extends ExceptionHandler
     /**
      * Register the exception handling callbacks for the application.
      */
-    public function register(): void
+    public function register()
     {
-        $this->reportable(function (Throwable $e) {
-            //
+        $this->renderable(function (\Spatie\Permission\Exceptions\UnauthorizedException $e, $request) {
+            return response()->view('errors.unauthorized', [
+                'message' => 'У вас нету доступа к этой странице',
+            ], 403);
         });
+
+        $this->renderable(function(NotFoundHttpException $e, Request $request) {
+            if($request->is('api/*')) {
+                return response()->json([
+                    'message'=> 'End Point Not Found',
+                ], 404);
+            }
+            if($request->is('web/*')) {
+                return response()->json([
+                    'message' => 'Page Not Found'
+                ], 404);
+            }
+        });
+
+        
     }
 }

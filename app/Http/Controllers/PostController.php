@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\PostCreateRequest;
-use App\Http\Requests\ProfileUpdateRequest;
+use App\Http\Requests\Post\PostCreateRequest;
 use App\Models\Post;
 use App\Models\PostComment;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -69,19 +68,23 @@ class PostController extends Controller
     {
         $id = $request->id;
         $post = Post::find($id);
-        $comments = PostComment::where('post_id', $id)->get();
+        $comments = PostComment::where('post_id', $id)->paginate(5);
         return Inertia::render('Publication', [
             'posts' => $post,
             'comments' => $comments
         ]);
     }
+
+    //$id 0 - all posts
+    //$id 1,2 or another id, get user posts
     public function filterPosts(Request $request)
     {
         $request->validate([
             'id' => 'string'
         ]);
-        $id = $request->id;
-        $posts = $id == '0' ? $posts = Post::getPostsWithFiles() :  $posts = Post::getPostsWithFiles($id);
-        return response()->json($posts);
+
+        $posts = $request->id ? Post::getPostsByAuthor($request->id) : Post::getPostsWithFiles() ;
+
+        return $posts;
     }
 }

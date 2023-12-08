@@ -1,9 +1,8 @@
 <?php
 
 use App\Http\Controllers\CommentController;
-use App\Http\Controllers\GoogleLoginController;
-use App\Http\Controllers\InspiniaController;
 use App\Http\Controllers\MediaController;
+use App\Http\Controllers\OAuthController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicationsDynamicController;
@@ -12,7 +11,6 @@ use App\Http\Controllers\UserController;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -33,10 +31,13 @@ Route::middleware('guest')->group(function () {
         return Inertia::render('Welcome', ['posts' => $posts, 'authors' => $authors]);
     });
 
-    Route::get('login/google', [GoogleLoginController::class, 'redirect'])->name('login.google-redirect');
-    Route::get('login/google/callback', [GoogleLoginController::class, 'callback'])->name('login.google-callback');
+    Route::get('login/google/callback', [OAuthController::class, 'googleCallback'])->name('login.google-callback');
+    Route::get('login/github/callback', [OAuthController::class, 'githubCallback'])->name('login.github-callback');
+
+    Route::get('/login/oauth', [OAuthController::class,'OAuthApiLogin'])->name('login.oauth');
 
     Route::post('/create-comment/{id}', [CommentController::class, 'create'])->name('comment.create');
+    Route::delete('/delete-comment/{id}', [CommentController::class,'delete'])->name('comment.delete');
 
     Route::get('/publication/{id}', [PostController::class, 'publication'])->name('post.publication');
 
