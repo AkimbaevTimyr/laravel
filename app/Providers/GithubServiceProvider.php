@@ -13,6 +13,25 @@ use Spatie\Permission\Models\Role;
 
 class GithubServiceProvider
 {
+    // public function updateOrCreate($user, $githubUser)
+    // {
+    //     try{
+    //         $user = User::updateOrCreate([
+    //             'github_id' => $githubUser->getId(),
+    //         ], [
+    //             'name' => $githubUser->name,
+    //             'email' => $githubUser->email,
+    //             'github_token' => $githubUser->token,
+    //             'github_refresh_token' => $githubUser->refreshToken,
+    //         ]);
+    //         Auth::login($user);
+    //     } catch(AuthenticationException $e)
+    //     {
+    //         dd($e->getMessage());
+    //     }
+       
+    // }
+
     public function auth($user, $githubUser)
     {
         try{

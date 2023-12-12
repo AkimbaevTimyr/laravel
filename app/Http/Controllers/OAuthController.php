@@ -57,8 +57,8 @@ class OAuthController extends Controller
     private function loginOrCreateFromSocialite($user, $provider)
     {
         $providers = [
-            'google' => ['service'=> GoogleServiceProvider::class, 'column' => 'google_id'],
-            'github' => ['service'=> GithubServiceProvider::class, 'column' => 'github_id'],
+            'google' => ['service'=> GoogleServiceProvider::class],
+            'github' => ['service'=> GithubServiceProvider::class],
         ];
 
         if(!isset($providers[$provider])) {
@@ -66,10 +66,9 @@ class OAuthController extends Controller
         }
 
         $serviceClass = $providers[$provider]['service'];
-        $column = $providers[$provider]['column'];
 
         $service = new $serviceClass();
-        $findUser = User::where($column, $user->id)->first();
+        $findUser = User::where("email", $user->email)->first();
 
         if($findUser) {
             $service->auth($findUser, $user);
